@@ -1,11 +1,15 @@
 package ualberta.cmput301.camerademo;
 
+import java.io.File;
+
 import ualberta.cmput301.camerodemo.R;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.View;
@@ -18,11 +22,11 @@ public class CameraDemoActivity extends Activity {
 	private TextView textView;
 	private ImageButton imageButton;
 	private Uri imageFileUri;
+	File imageFile;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camero_demo);
-		
 		// Retrieve handlers
 		textView = (TextView) findViewById(R.id.status);
 		imageButton = (ImageButton) findViewById(R.id.image);
@@ -44,16 +48,26 @@ public class CameraDemoActivity extends Activity {
 	// need implement onAcitityResult() method.
 	public void takeAPhoto() {
 		// To Do		
+		String pathString = Environment.getExternalStorageDirectory().getAbsolutePath();
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		imageFileUri = Uri.fromFile(new File(pathString+"/temp"));
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageFileUri);
 		startActivityForResult(intent, 0);
 	}
 	
+	
+	@SuppressLint("NewApi")
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// To Do
 		if (requestCode == 0){
 			if(resultCode == RESULT_OK){
-				Bitmap bm = (Bitmap) data.getExtras().getParcelable("data");
-				imageButton.setImageBitmap(bm);
+//				Bitmap bm = imageFileUri.
+				imageButton.setImageURI(imageFileUri);
+//				Bitmap bm = (Bitmap) data.getExtras().getParcelable("data");
+//				Bitmap scaledBM = Bitmap.createBitmap(bm, (int) imageButton.getX(), (int) imageButton.getY(), imageButton.getWidth(), imageButton.getHeight());
+//				bm = Bitmap.createScaledBitmap(bm, imageButton.getWidth(), imageButton.getHeight(), true);
+//				Uri.fromFile(getFilesDir());
+//				imageButton.setImageBitmap(bm);
 				textView.setText("Photo OK");
 			}else if(resultCode == RESULT_CANCELED){
 				textView.setText("Photo Cancelled");
